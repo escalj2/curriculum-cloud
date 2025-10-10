@@ -17,6 +17,7 @@ const mockLessons: Lesson[] = [
 ];
 
 export default function Dashboard() {
+// Track whether the modal is open or closed (default: closed)
 const [isModalOpen, setIsModalOpen] = useState(false);
 
   return(
