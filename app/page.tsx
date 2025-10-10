@@ -1,3 +1,6 @@
+"use client";
+import { useState } from "react";
+import Modal from "./components/Modal";
 
 interface Lesson {
   id: number;
@@ -14,9 +17,18 @@ const mockLessons: Lesson[] = [
 ];
 
 export default function Dashboard() {
+const [isModalOpen, setIsModalOpen] = useState(false);
+
   return(
     <div className="space-y-6">
       <h2 className="text-3xl font-bold">Your Lessons</h2>
+      
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium"
+      >
+        + New Lesson
+      </button>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {mockLessons.map((lesson) => (
@@ -31,6 +43,12 @@ export default function Dashboard() {
         </div>
       ))}
       </div>
+
+      {/* Modal */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <h2 className="text-2xl font-bold mb-4">Add New Lesson</h2>
+        <p className="text-slate-600">Form content will go here...</p>
+      </Modal>
     </div>
   );
 }
