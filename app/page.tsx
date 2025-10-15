@@ -49,6 +49,13 @@ const [newLesson, setNewLesson] = useState({
 
   // Save lessons to localStorage whenever lessons list changes
   useEffect(() => {
+
+  // If no lessons exist, reset to mock data for testing
+  if (lessons.length === 0){
+    setLessons(mockLessons);
+    return
+  }
+
     localStorage.setItem("lessons", JSON.stringify(lessons));
   }, [lessons]);
 
