@@ -35,13 +35,13 @@ const [newLesson, setNewLesson] = useState({
   date: "",
 });
 
- // Local Storage Loguc
+ // Local Storage Logic
 
  // Load saved lessons from localStorage when the page first loads
  useEffect(() => {
-  const StoredLessons = localStorage.getItem("lessons");
-  if (StoredLessons){
-    setLessons(JSON.parse(StoredLessons));
+  const storedLessons = localStorage.getItem("lessons");
+  if (storedLessons){
+    setLessons(JSON.parse(storedLessons));
   } else {
     setLessons(mockLessons);
   }
@@ -62,6 +62,13 @@ const [newLesson, setNewLesson] = useState({
     });
   };
 
+  //  Delete a lesson by its ID
+const handleDeleteLesson = (id: number) => {
+  const updatedLessons = lessons.filter((lesson) => lesson.id !== id);
+  setLessons(updatedLessons);
+};
+
+
   // Handle when user clicks "Save Lesson"
   const handleSaveLesson = () => {
     // Simple validation - make sure all fields are filled
@@ -81,6 +88,7 @@ const [newLesson, setNewLesson] = useState({
     setNewLesson({title: "", subject: "", grade: "", date: ""});
     setIsModalOpen(false); // close the modal
   };
+  
 
   // Render UI
 
@@ -102,15 +110,25 @@ const [newLesson, setNewLesson] = useState({
       {lessons.map((lesson) => (
         <div
           key={lesson.id}
-          className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition duration-300"
+          className=" relative bg-white p-6 rounded-xl shadow hover:shadow-lg transition duration-300"
           >
             <h3 className="text-xl font-semibold mb-2 text-sky-400">{lesson.title}</h3>
             <p className="text-slate-600">{lesson.subject}</p>
             <p className="text-slate-600">Grade {lesson.grade}</p>
             <p className="text-slate-500 text-sm mt-2">{lesson.date}</p>
+
+            {/* Delete Button */}
+          <button
+            onClick={() => handleDeleteLesson(lesson.id)} // call delete function
+            className="absolute top-2 right-3 text-red-500 hover:text-red-700 font-bold text-lg"
+            title="Delete Lesson"
+          >
+            X
+          </button>
         </div>
       ))}
       </div>
+
 
       {/* Modal with Form*/}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
