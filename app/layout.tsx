@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Curriculu Cloud",
+  title: "Curriculum Cloud",
   description: "Lesson Plan Organizer & Curriculum Builder",
 };
 
