@@ -27,6 +27,9 @@ const [lessons, setLessons] = useState<Lesson[]>([]);
 // Track whether the modal is open or closed (default: closed)
 const [isModalOpen, setIsModalOpen] = useState(false);
 
+// Track which lesson is being edited (null means addin a new one)
+const [editingLessonID, setEditingLessonID] = useState<number | null>(null);
+
 // Form input fields
 const [newLesson, setNewLesson] = useState({
   title: "",
@@ -50,13 +53,12 @@ const [newLesson, setNewLesson] = useState({
   // Save lessons to localStorage whenever lessons list changes
   useEffect(() => {
 
-  // If no lessons exist, reset to mock data for testing
-  if (lessons.length === 0){
-    setLessons(mockLessons);
-    return
-  }
-
-    localStorage.setItem("lessons", JSON.stringify(lessons));
+    // If no lessons exist, reset to mock data for testing
+    if (lessons.length === 0){
+      setLessons(mockLessons);
+      return
+    }
+      localStorage.setItem("lessons", JSON.stringify(lessons));
   }, [lessons]);
 
   // Event Handlers
@@ -75,6 +77,18 @@ const handleDeleteLesson = (id: number) => {
   setLessons(updatedLessons);
 };
 
+  // When user clicks Edit, open modal with existing lesson info
+  const handleEditLesson = (lesson: Lesson) => {
+    setNewLesson({
+      title: lesson.title,
+      subject: lesson.subject,
+      grade: lesson.grade,
+      date: lesson.date,
+    });
+    setEditingLessonID(lesson.id) // Mark which one is being edited
+    setIsModalOpen(true); // open modal
+  }
+
 
   // Handle when user clicks "Save Lesson"
   const handleSaveLesson = () => {
@@ -84,7 +98,16 @@ const handleDeleteLesson = (id: number) => {
       return;
     }
 
-    // Create a new lesson object with a unique ID
+    // We're editing an existing lesson
+    if (editingLessonID != null){
+      const updatedLessons = lessons.map((lesson) =>
+      lesson.id === editingLessonID ? {...lesson, ...newLesson} : lesson
+    );
+    setLessons(updatedLessons);
+    setEditingLessonID(null); // reset edit mode
+    } else {
+      //We're adding a new lesson
+
     const lessonToAdd: Lesson = {
       id: Date.now(), //generates unique number based on current time
       ...newLesson,
@@ -92,6 +115,7 @@ const handleDeleteLesson = (id: number) => {
 
     // Add it to the list and reset form
     setLessons([...lessons, lessonToAdd]);
+  }
     setNewLesson({title: "", subject: "", grade: "", date: ""});
     setIsModalOpen(false); // close the modal
   };
@@ -106,7 +130,11 @@ const handleDeleteLesson = (id: number) => {
       
       {/* Button that opens the modal */}
       <button
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => {
+          setEditingLessonID(null); // reset edit mode
+          setNewLesson({ title: "", subject: "", grade: "", date: "" }) // clear form
+          setIsModalOpen(true)
+        }}
         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium"
       >
         + New Lesson
@@ -124,6 +152,15 @@ const handleDeleteLesson = (id: number) => {
             <p className="text-slate-600">Grade {lesson.grade}</p>
             <p className="text-slate-500 text-sm mt-2">{lesson.date}</p>
 
+            {/* Edit Button */}
+            <button
+            onClick={() => handleEditLesson(lesson)}
+            className="absolute top-2 left-3 text-blue-500 hover:text-blue-700 font-bold text-lg"
+            title="Edit Lesson"
+            >
+              ✏️
+            </button>
+
             {/* Delete Button */}
           <button
             onClick={() => handleDeleteLesson(lesson.id)} // call delete function
@@ -139,7 +176,9 @@ const handleDeleteLesson = (id: number) => {
 
       {/* Modal with Form*/}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <h2 className="text-2xl font-bold mb-4">Add New Lesson</h2>
+        <h2 className="text-2xl font-bold mb-4">
+          {editingLessonID ? "Edit Lesson" : "Add New Lesson"}
+        </h2>
         {/* Input Fields*/}
         <div className="flex flex-col space-y-3">
           <input
@@ -175,7 +214,7 @@ const handleDeleteLesson = (id: number) => {
         {/* Save Button */}
         <button
           onClick={handleSaveLesson}
-          className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-medium"
+          className="mt-4 w-full bg-black hover:bg-gray-900 text-white py-2 rounded-md font-medium transition duration-200"
         >
           Save Lesson
         </button>
