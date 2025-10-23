@@ -9,6 +9,7 @@ interface Lesson {
   subject: string;
   grade: string;
   date: string;
+  updatedAt?: string; 
 }
 
 const mockLessons: Lesson[] = [
@@ -92,25 +93,32 @@ const handleDeleteLesson = (id: number) => {
 
   // Handle when user clicks "Save Lesson"
   const handleSaveLesson = () => {
+
+    
     // Simple validation - make sure all fields are filled
     if (!newLesson.title || !newLesson.subject || !newLesson.grade || !newLesson.date){
       alert("Please fill out all fields before saving.");
       return;
     }
 
+    const now = new Date().toLocaleDateString();
+
+
     // We're editing an existing lesson
     if (editingLessonID != null){
       const updatedLessons = lessons.map((lesson) =>
-      lesson.id === editingLessonID ? {...lesson, ...newLesson} : lesson
+      lesson.id === editingLessonID ? {...lesson, ...newLesson, updatedAt: now } : lesson
     );
+
     setLessons(updatedLessons);
     setEditingLessonID(null); // reset edit mode
+
     } else {
       //We're adding a new lesson
-
     const lessonToAdd: Lesson = {
       id: Date.now(), //generates unique number based on current time
       ...newLesson,
+      updatedAt: now,
     };
 
     // Add it to the list and reset form
@@ -151,7 +159,7 @@ const handleDeleteLesson = (id: number) => {
             <p className="text-slate-600">{lesson.subject}</p>
             <p className="text-slate-600">Grade {lesson.grade}</p>
             <p className="text-slate-500 text-sm mt-2">{lesson.date}</p>
-
+            <p className="text-slate-400 text-sm mt-1 italic">Last updated: {lesson.updatedAt || "Just added"}</p>
             {/* Edit Button */}
             <button
             onClick={() => handleEditLesson(lesson)}
